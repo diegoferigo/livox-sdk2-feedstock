@@ -16,6 +16,7 @@ source:
       - 0002-Add-missing-includes-for-ubuntu-24.04-comp.patch
       - 0003-unvendor-spdlog-and-rapidjson.patch
       - 0004-support-recent-fmt.patch
+      - 0005-replace-posix-calls-on-win.patch
 
 build:
   number: 1
