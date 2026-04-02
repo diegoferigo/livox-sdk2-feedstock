@@ -32,6 +32,29 @@ requirements:
     - rapidjson
     - spdlog
 
+tests:
+  - package_contents:
+      files:
+        - if: unix
+          then:
+            - include/livox_lidar_api.h
+            - include/livox_lidar_def.h
+            - include/livox_lidar_cfg.h
+            - lib/liblivox_lidar_sdk_static.a
+          else:
+            - Library/include/livox_lidar_api.h
+            - Library/include/livox_lidar_def.h
+            - Library/include/livox_lidar_cfg.h
+        - if: linux
+          then:
+            - lib/liblivox_lidar_sdk_shared.so
+        - if: osx
+          then:
+            - lib/liblivox_lidar_sdk_shared.dylib
+        - if: win
+          then:
+            - Library/lib/livox_lidar_sdk_static.lib
+
 about:
   license: MIT
   license_file: LICENSE.txt
