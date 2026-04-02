@@ -1,0 +1,164 @@
+--- a/sdk_core/parse_cfg_file.h
++++ b/sdk_core/parse_cfg_file.h
+@@ -27,10 +27,16 @@
+
+ #include "livox_lidar_def.h"
+
++#ifndef RAPIDJSON_NAMESPACE
++#define RAPIDJSON_NAMESPACE livox_sdk2_private_rapidjson
++#endif
++
+ #include "rapidjson/document.h"
+ #include "rapidjson/filereadstream.h"
+ #include "rapidjson/stringbuffer.h"
+
++namespace rapidjson = RAPIDJSON_NAMESPACE;
++
+ #include "comm/define.h"
+
+ #include <iostream>
+@@ -43,7 +49,7 @@
+
+ class ParseCfgFile {
+  public:
+-  explicit ParseCfgFile(const std::string& path);  
++  explicit ParseCfgFile(const std::string& path);
+   bool Parse(std::shared_ptr<std::vector<LivoxLidarCfg>>& lidars_cfg_ptr,
+              std::shared_ptr<std::vector<LivoxLidarCfg>>& custom_lidars_cfg_ptr,
+              std::shared_ptr<LivoxLidarLoggerCfg>& lidar_logger_cfg_ptr,
+@@ -73,4 +79,3 @@
+ } // namespace livox
+
+ #endif // LIVOX_PARSE_CFG_FILE_H_
+-
+--- a/sdk_core/CMakeLists.txt
++++ b/sdk_core/CMakeLists.txt
+@@ -1,5 +1,22 @@
+ cmake_minimum_required(VERSION 3.0)
+
++find_package(spdlog REQUIRED)
++
++find_path(RAPIDJSON_INCLUDE_DIR
++    NAMES rapidjson.h
++    PATH_SUFFIXES rapidjson
++    REQUIRED
++)
++
++message(STATUS "Found spdlog: ${spdlog_DIR}")
++message(STATUS "Found rapidjson: ${RAPIDJSON_INCLUDE_DIR}")
++
++add_library(rapidjson::rapidjson INTERFACE IMPORTED)
++
++set_target_properties(rapidjson::rapidjson PROPERTIES
++    INTERFACE_INCLUDE_DIRECTORIES "${RAPIDJSON_INCLUDE_DIR}"
++)
++
+ set(SDK_LIBRARY_STATIC livox_lidar_sdk_static)
+ set(SDK_LIBRARY_SHARED livox_lidar_sdk_shared)
+
+@@ -17,7 +34,7 @@
+         ../include/livox_lidar_cfg.h
+         )
+
+-set_target_properties(${SDK_LIBRARY_STATIC} #${SDK_LIBRARY_SHARED} 
++set_target_properties(${SDK_LIBRARY_STATIC} #${SDK_LIBRARY_SHARED}
+         PROPERTIES
+         PUBLIC_HEADER "${LIVOX_API_HEADER}"
+         )
+@@ -28,6 +45,9 @@
+   set(PLATFORM unix)
+ endif (WIN32)
+
++
++message(STATUS "Platform: ${PLATFORM}")
++
+ target_compile_options(${SDK_LIBRARY_STATIC}
+         PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>#-Wno-c++11-long-long>
+         PRIVATE $<$<CXX_COMPILER_ID:AppleClang>:-Wno-unknown-pragmas -Wall -Werror -Wno-c++11-long-long>
+@@ -40,12 +60,11 @@
+         PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wno-unknown-pragmas -Wall -Werror -Wno-c++11-long-long>
+         )
+
+-set(LIVOX_PRIVATE_INCLUDE_DIR 
+-        ../3rdparty 
+-        ../3rdparty/spdlog 
++set(LIVOX_PRIVATE_INCLUDE_DIR
++        ../3rdparty
+         .
+         )
+-set(LIVOX_PUBLIC_INCLUDE_DIR 
++set(LIVOX_PUBLIC_INCLUDE_DIR
+         ../include
+         )
+
+@@ -55,7 +74,7 @@
+         ${LIVOX_PUBLIC_INCLUDE_DIR}
+         PRIVATE
+         ${LIVOX_PRIVATE_INCLUDE_DIR}
+-        )        
++        )
+ target_include_directories(
+         ${SDK_LIBRARY_SHARED}
+         PUBLIC
+@@ -64,6 +83,17 @@
+         ${LIVOX_PRIVATE_INCLUDE_DIR}
+         )
+
++target_link_libraries(${SDK_LIBRARY_STATIC}
++        PRIVATE
++        spdlog::spdlog
++        rapidjson::rapidjson
++)
++target_link_libraries(${SDK_LIBRARY_SHARED}
++        PRIVATE
++        spdlog::spdlog
++        rapidjson::rapidjson
++)
++
+ set(MAIN_SOURCES
+         device_manager.cpp
+         livox_lidar_sdk.cpp
+--- a/sdk_core/command_handler/parse_lidar_state_info.h
++++ b/sdk_core/command_handler/parse_lidar_state_info.h
+@@ -35,11 +35,17 @@
+
+ #include "livox_lidar_def.h"
+
++#ifndef RAPIDJSON_NAMESPACE
++#define RAPIDJSON_NAMESPACE livox_sdk2_private_rapidjson
++#endif
++
+ #include "rapidjson/document.h"
+ #include "rapidjson/filereadstream.h"
+ #include "rapidjson/stringbuffer.h"
+ #include "rapidjson/prettywriter.h"
+
++namespace rapidjson = RAPIDJSON_NAMESPACE;
++
+ namespace livox {
+
+ namespace lidar {
+@@ -61,23 +67,3 @@
+ } // namespace lidar
+
+ # endif // PARSE_LIDAR_STATE_INFO_H_
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
