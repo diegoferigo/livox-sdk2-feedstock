@@ -105,15 +105,9 @@
  } // namespace lidar
 --- a/sdk_core/logger_handler/logger_manager.cpp
 +++ b/sdk_core/logger_handler/logger_manager.cpp
-@@ -115,7 +115,7 @@
- bool LoggerManager::InitLoggerSavePath(std::string log_root_path) {
-   std::string log_root_dir =
-       log_root_path + (log_root_path.back() == '/' ? "" : "/") + "lidar_log/";
+@@ -118,1 +118,1 @@
 -  if (access(log_root_dir.c_str(), 0) != EXIT_SUCCESS) {
 +  if (!IsDirectoryExits(log_root_dir)) {
-     if (!MakeDirecotory(log_root_dir)) {
-       LOG_ERROR("Can't Create Dir {}", log_root_dir);
-       return false;
 --- a/sdk_core/upgrade/firmware.cpp
 +++ b/sdk_core/upgrade/firmware.cpp
 @@ -95,7 +95,8 @@
