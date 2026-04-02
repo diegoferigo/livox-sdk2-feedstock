@@ -15,6 +15,7 @@ source:
       - 0001-update-cmake-minimum-version.patch
       - 0002-Add-missing-includes-for-ubuntu-24.04-comp.patch
       - 0003-unvendor-spdlog-and-rapidjson.patch
+      - 0004-support-recent-fmt.patch
 
 build:
   number: 1
@@ -28,7 +29,7 @@ requirements:
     - pkg-config
     - ninja
   host:
-    - fmt <10
+    - fmt
     - rapidjson
     - spdlog
 
